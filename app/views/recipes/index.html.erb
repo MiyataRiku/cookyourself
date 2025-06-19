@@ -1,10 +1,19 @@
-
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">s
+  <link rel="stylesheet" href="style.css">  <!-- ← ここがCSS読み込み -->
+</head>
 <h1>レシピ一覧ページ</h1>
 
 <h2>投稿を検索</h2>
- <%= form_tag({controller:"recipes",action:"index"}, method: :get) do %>
-   <%= text_field_tag :search %>
-   <%= submit_tag '検索する'  %>
+
+<%= form_tag({controller:"recipes", action:"index"}, method: :get, class: "search-form") do %>
+  <div class="search-box">
+    <i class="fas fa-search"></i>
+    <%= text_field_tag :search, params[:search], placeholder: "レシピを検索", class: "search-input" %>
+    <%= submit_tag "検索", class: "search-button" %>
+  </div>
 <% end %>
 
 <h2>カテゴリ</h2>
@@ -45,19 +54,22 @@
    <p><strong>メールアドレス:</strong> <%= t.user.email %>
 
 
-      <% if user_signed_in? %>
-       <% if current_user.already_liked?(t) %>
-          <%= button_to recipe_like_path(id: t.id, recipe_id: t.id), data: { turbo_method: :delete } do %>
-                <i class="fas fa-heart"></i><%= t.likes.count %>
-          <% end %>
-       <% else %>
-          <%= button_to recipe_likes_path(id: t.id, recipe_id: t.id), data: { turbo_method: :post }  do %>
-                <i class="far fa-heart"></i><%= t.likes.count %>
-          <% end %>
-       <% end %>
-      <% else %>
-                <i class="far fa-heart"></i><%= t.likes.count %>
+  <% if user_signed_in? %>
+    <% if current_user.already_liked?(t) %>
+      <%= button_to recipe_like_path(id: t.id, recipe_id: t.id), data: { turbo_method: :delete }, class: "like-button liked" do %>
+        <i class="fas fa-heart"></i><%= t.likes.count %>
       <% end %>
+    <% else %>
+      <%= button_to recipe_likes_path(id: t.id, recipe_id: t.id), data: { turbo_method: :post }, class: "like-button" do %>
+        <i class="far fa-heart"></i><%= t.likes.count %>
+      <% end %>
+    <% end %>
+  <% else %>
+    <span class="like-button">
+      <i class="far fa-heart"></i><%= t.likes.count %>
+    </span>
+  <% end %>
+
 
 
 
@@ -84,4 +96,3 @@
    <% end %>
 <%= link_to "レシピ投稿ページへ", new_recipe_path %>
 
-<link rel="stylesheet" href="recipes.css">

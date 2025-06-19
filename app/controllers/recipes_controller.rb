@@ -3,16 +3,16 @@ class RecipesController < ApplicationController
         @recipes = Recipe.all
         @tags = Tag.all # ← タグを使っているならこれも必要
 
-      if params[:search].present?
-         keyword = "%#{params[:search]}%"
-         @recipes = Recipe.where(
-            "name LIKE :kw OR material LIKE :kw OR kcal LIKE :kw OR time LIKE :kw OR price LIKE :kw",
-           kw: keyword
-         )
-      else
-         @recipes = Recipe.all
-      end
-
+    if params[:search].present?
+      search_term = "%#{params[:search]}%"
+      # kcal カラムをテキスト型にキャストしてから LIKE 検索を行う
+      @recipes = Recipe.where("name LIKE ? OR material LIKE ? OR CAST(kcal AS TEXT) LIKE ?", search_term, search_term, search_term)
+      # または、Rails 5 以降で推奨される記法
+      # @recipes = Recipe.where("name ILIKE :search OR material ILIKE :search OR CAST(kcal AS TEXT) ILIKE :search", search: search_term)
+      # ILIKE は大文字・小文字を区別しない検索です。
+    else
+      @recipes = Recipe.all
+    end
     end  
   
    def new

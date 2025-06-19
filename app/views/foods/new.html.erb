@@ -1,0 +1,26 @@
+
+<h3>新規レシピ</h3>
+
+<%= form_for @food do |f| %>
+
+<div class="field">
+    <%= f.label :name %>
+    <%= f.text_field :name, :size => 30 %>
+</div>
+
+<div class="field">
+    <%= f.label :date, "食材を購入した日" %>
+    <%= f.date_field :date %>
+</div>
+
+
+<div class="field">
+    <%= f.label :money  %>
+    <%= f.number_field :money, :size => 10 %>
+</div>
+
+    <%= f.submit "レシピを投稿する" %>
+
+<% end %>
+
+<%= link_to "レシピ一覧に戻る", foods_new_path %>

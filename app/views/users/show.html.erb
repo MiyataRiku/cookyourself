@@ -1,0 +1,53 @@
+
+
+<p>名前 : <%= @user.name %></p>
+
+<% if @user.image.attached? %>
+     <%= image_tag  @user.image, size: '250x200'%>
+<% end %>
+
+
+<p>メールアドレス : <%= @user.email %></p>
+
+<p>プロフィール : <%= @user.profile %></p>
+
+
+<% if current_user.id == @user.id %>
+  <%= link_to "編集する", edit_user_registration_path %>
+<% end %>
+
+<h2>過去に使用したレシピ</h2>
+
+
+<% @user.recipes.each do |t| %>
+
+   <p><strong>調理した日:</strong><%= t.created_at %></p>
+
+   <p><strong>料理名:</strong> <%= t.name %></p>
+
+      <% if t.image.attached? %>
+        <%= image_tag t.image, size: '250x200'%>
+      <% end %>
+
+      <%= link_to "レシピ詳細へ", recipe_path(t.id) %> 
+<% end %>
+
+<h2>好評価したレシピ</h2>
+<% @user.liked_recipes.each do |t| %>
+
+  <p><strong>料理名:</strong> <%= t.name %></p>
+
+      <% if t.image.attached? %>
+        <%= image_tag t.image, size: '250x200'%>
+      <% end %>
+
+  <p><strong>投稿者:</strong> <%= t.user.name %> <%= link_to "ユーザー詳細", user_path(t.user) %></p>
+  
+  <p><strong>メールアドレス:</strong> <%= t.user.email %></p>
+
+     <%= link_to "レシピ詳細へ", recipe_path(t.id) %> 
+
+<% end %>
+
+<%= link_to "レシピ一覧へ", recipes_path %>
+<%= link_to "レシピ投稿ページへ", new_recipe_path %>

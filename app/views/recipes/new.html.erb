@@ -1,0 +1,62 @@
+
+<h1>レシピ投稿ページ</h1>
+<%= form_with model: @recipe, local: true do |f| %>
+
+<div class="field">
+    <%= f.label :image,"写真" %>
+    <%= f.file_field :image %>
+</div>
+
+<div class="field">
+    <%= f.label :name,"料理名" %>
+    <%= f.text_field :name, :size => 30 %>
+</div>
+
+<div class="field">
+    <%= f.label :price,"価格"  %>
+    <%= f.number_field :price, :size => 10 %>
+    <%= f.label :price,"円"  %>
+</div>
+
+<div class="field">
+    <%= f.label :time,"調理時間"  %>
+    <%= f.number_field :time, :size => 10 %>
+    <%= f.label :time,"分"  %>
+</div>
+
+<div class="field">
+    <%= f.label :kcal,"摂取カロリー" %>
+    <%= f.number_field :kcal, :size => 10 %>
+    <%= f.label :kcal,"kcal" %>
+</div>
+
+<div class="field">
+    <%= f.label :material,"食材・調味料" %>
+    <%= f.text_area :material, :size => 30*10%>
+</div>
+
+<div class="field">
+    <%= f.label :process,"調理工程" %>
+    <%= f.text_area :process, :size => 40*30%>
+</div>
+
+<div class="field">
+    <%= f.label :tips,"ワンポイントアドバイス・コツ" %>
+    <%= f.text_area :tips, :size => 40*30%>
+</div>
+
+<% unique_tags = @tags.uniq { |tag| tag.name } %>
+
+<% unique_tags.each do |tag| %>
+  <div>
+    <label>
+      <%= check_box_tag "recipe[tag_ids][]", tag.id, false %>
+      <%= tag.name %>
+    </label>
+  </div>
+<% end %>
+
+  <%= f.submit "投稿する" %>
+    <% end %>
+
+<%= link_to "レシピ一覧に戻る", recipes_path %>

@@ -1,0 +1,85 @@
+
+<h1>レシピ一覧ページ</h1>
+
+<h2>投稿を検索</h2>
+ <%= form_tag({controller:"recipes",action:"index"}, method: :get) do %>
+   <%= text_field_tag :search %>
+   <%= submit_tag '検索する'  %>
+<% end %>
+
+<h2>カテゴリ</h2>
+
+
+<%= form_tag recipes_path, method: :get, class: 'boards__searchForm' do %>
+      <%= select_tag :tag_id,
+                     options_from_collection_for_select(Tag.all, :id, :name, params[:tag_id]),
+                     {
+                       prompt: 'タグで絞り込み検索',
+                       onchange: 'submit(this.form);'
+                     }
+      %>
+ <% end %>
+    
+<div class="recipes-container">
+  <% @recipes.each do |t| %>
+    <div class="recipe">
+
+
+   <p><strong>料理名:</strong> <%= t.name %></p>
+
+
+        <p><strong>カテゴリー:</strong> <%= t.tags.map(&:name).join('、') %></p>
+
+
+      <% if t.image.attached? %>
+        <%= image_tag t.image, size: '250x200'%>
+      <% end %>
+
+   <p><strong>価格:</strong> <%= t.price %>円</p>
+   <p><strong>摂取カロリー:</strong> <%= t.kcal %> kcal</p>
+   <p><strong>調理時間:</strong> <%= t.time %>分</p>
+   <p><strong>食材・調味料:</strong> <%= t.material %></p>
+
+   <p><strong>投稿者:</strong> <%= t.user.name %> <%= link_to "ユーザー詳細", user_path(t.user) %></p>
+
+   <p><strong>メールアドレス:</strong> <%= t.user.email %>
+
+
+      <% if user_signed_in? %>
+       <% if current_user.already_liked?(t) %>
+          <%= button_to recipe_like_path(id: t.id, recipe_id: t.id), data: { turbo_method: :delete } do %>
+                <i class="fas fa-heart"></i><%= t.likes.count %>
+          <% end %>
+       <% else %>
+          <%= button_to recipe_likes_path(id: t.id, recipe_id: t.id), data: { turbo_method: :post }  do %>
+                <i class="far fa-heart"></i><%= t.likes.count %>
+          <% end %>
+       <% end %>
+      <% else %>
+                <i class="far fa-heart"></i><%= t.likes.count %>
+      <% end %>
+
+
+
+
+     
+
+     <%= link_to "レシピ詳細へ", recipe_path(t.id) %>  
+
+    <% if user_signed_in? && current_user.id == t.user_id %>
+      <%= link_to "編集する", edit_recipe_path(t.id) %>
+      <%= button_to "削除する", recipe_path(t.id), method: :delete %>
+    <% end %>  
+
+
+    </div>
+  <% end %>
+</div>
+
+
+
+
+   <% if user_signed_in? %>
+      <%= link_to "マイページへ", user_path(current_user.id) %>
+   <% end %>
+<%= link_to "レシピ投稿ページへ", new_recipe_path %>

@@ -1,0 +1,88 @@
+
+<h3>レシピ詳細</h3>
+
+<div class="recipe">
+
+
+   <p><strong>料理名:</strong> <%= @recipe.name %></p>
+
+   <% @recipe.tags.each do |tag| %>
+   <p><strong>カテゴリー:</strong> <%= tag.name %></p>
+   <% end %>
+
+        <!-- 画像を表示 -->
+          <% if @recipe.image.attached? %>
+            <%= image_tag @recipe.image, size: "250x200" %>
+          <% else %>
+            <p>画像はありません</p>
+          <% end %>
+
+   <p><strong>価格:</strong> <%= @recipe.price %>円</p>
+   <p><strong>摂取カロリー:</strong> <%= @recipe.kcal %> kcal</p>
+   <p><strong>調理時間:</strong> <%= @recipe.time %>分</p>
+   <p><strong>食材・調味料:</strong> <%= @recipe.material %></p>
+   <p><strong>調理工程:</strong> <%= @recipe.process %></p>
+   <p><strong>ワンポイントアドバイス・コツ:</strong> <%= @recipe.tips %></p>
+
+     <p><%= @recipe.created_at %></p>
+
+
+          <% if user_signed_in? %>
+               <% if current_user.already_liked?(@recipe) %>
+                  <%= button_to recipe_like_path(id: @recipe.id, recipe_id: @recipe.id), data: { turbo_method: :delete } do %>
+                      <i class="fas fa-heart"></i><%= @recipe.likes.count %>
+                  <% end %>
+               <% else %>
+                  <%= button_to recipe_likes_path(id: @recipe.id, recipe_id: @recipe.id), data: { turbo_method: :post }  do %>
+                      <i class="far fa-heart"></i><%= @recipe.likes.count %>
+                  <% end %>
+               <% end %>
+          <% else %>
+              <i class="far fa-heart"></i><%= @recipe.likes.count %>
+          <% end %>
+
+</div>
+
+<div class="comment-wrapper">
+  <p><strong>レビュー</strong></p>
+  <% @comments.each do |c| %>
+    <div>
+      <%= c.user.name unless c.user.blank? %>
+      <br>
+      <%= c.content %>
+    </div>
+      <br>
+  <% end %>
+
+  <% if user_signed_in? %>
+    <%= form_with(model: [@recipe, @comment], local: true) do |f| %>
+      <%= f.text_area :content %>
+      <%= button_tag type: "submit" do %>
+        <i class="far fa-comments"></i> レビューを書き込む
+      <% end %>
+    <% end %>
+  <% end %>
+</div>
+
+ <p><strong>好評価したユーザー</strong></p>
+<% @recipe.liked_users.each do |user| %>
+
+  <li><%= user.name %></li>
+ <%= @recipe.user.name %> <%= link_to "ユーザー詳細", user_path(@recipe.user) %></p>
+
+
+<% end %>
+
+
+
+<%= link_to "レシピ一覧に戻る", recipes_path %>
+
+
+<%= link_to "レシピ投稿ページへ", new_recipe_path %>
+
+<% if user_signed_in? && current_user.id ==  @recipe.user_id %>
+  <%= link_to "レシピを編集する", edit_recipe_path(@recipe.id) %>
+  <%= button_to "削除する", recipe_path(@recipe.id), method: :delete %>
+<% end %>
+
+

@@ -1,21 +1,22 @@
 class RecipesController < ApplicationController
   def index
-    @recipes = Recipe.all
-    @tags = Tag.all # ← タグを使っているならこれも必要
+    @recipes = Recipe.all # まず全てのレシピを取得
 
+    # タグによる絞り込み
+    if params[:tag_id].present?
+      # tag_id が配列で渡される可能性も考慮し、includesとwhereを使う
+      # N+1問題も考慮し、joinsではなくincludesを使用（またはeager_load）
+      @recipes = @recipes.joins(:tags).where(tags: { id: params[:tag_id] })
+    end
+
+    # キーワード検索（タグ絞り込みの結果に対して適用する）
     if params[:search].present?
       search_term = "%#{params[:search]}%"
-      # kcal カラムをテキスト型にキャストしてから LIKE 検索を行う
-      # paramsの個数とプレースホルダの個数が合っていないため修正
-      @recipes = Recipe.where("name ILIKE ? OR material ILIKE ? OR CAST(kcal AS TEXT) ILIKE ? OR CAST(time AS TEXT) ILIKE ? OR CAST(price AS TEXT) ILIKE ?",
-                               search_term, search_term, search_term, search_term, search_term)
-      # または、Rails 5 以降で推奨される記法（ILIKEと名前付きプレースホルダ）
-      # @recipes = Recipe.where("name ILIKE :search OR material ILIKE :search OR CAST(kcal AS TEXT) ILIKE :search OR CAST(time AS TEXT) ILIKE :search OR CAST(price AS TEXT) ILIKE :search", search: search_term)
-      # ILIKE は大文字・小文字を区別しない検索です。
-    else
-      @recipes = Recipe.all
+      @recipes = @recipes.where("name ILIKE :search OR material ILIKE :search OR CAST(kcal AS TEXT) ILIKE :search OR CAST(time AS TEXT) ILIKE :search OR CAST(price AS TEXT) ILIKE :search", search: search_term)
     end
-  end # <-- index メソッドの end
+    
+    @tags = Tag.all # タグリストは常に必要なので、検索・絞り込みの条件に関わらず取得
+  end
   
   def new
     @recipe = Recipe.new

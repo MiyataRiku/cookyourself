@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">s
+  <meta charset="UTF-8">
   <link rel="stylesheet" href="style.css">  <!-- ← ここがCSS読み込み -->
 </head>
+   <% if user_signed_in? %>
+      <%= link_to "マイページへ", user_path(current_user.id), class: "pop-button"  %>
+   <% end %>
+<%= link_to "レシピ投稿ページへ", new_recipe_path, class: "pop-button"  %>
 <h1>レシピ一覧ページ</h1>
 
 <h2>投稿を検索</h2>
@@ -78,10 +82,18 @@
 
      <%= link_to "レシピ詳細へ", recipe_path(t.id) %>  
 
-    <% if user_signed_in? && current_user.id == t.user_id %>
-      <%= link_to "編集する", edit_recipe_path(t.id) %>
-      <%= button_to "削除する", recipe_path(t.id), method: :delete %>
-    <% end %>  
+<% if user_signed_in? && current_user.id == t.user_id %>
+<%= link_to edit_recipe_path(t.id), class: "edit-button" do %>
+  <i class="fas fa-edit"></i> 編集
+<% end %>
+
+  <%= button_to recipe_path(t.id),
+                method: :delete,
+                class: "delete-button" do %>
+    <i class="fas fa-trash-alt"></i> 削除
+  <% end %>
+<% end %>
+
 
 
     </div>
@@ -89,10 +101,4 @@
 </div>
 
 
-
-
-   <% if user_signed_in? %>
-      <%= link_to "マイページへ", user_path(current_user.id) %>
-   <% end %>
-<%= link_to "レシピ投稿ページへ", new_recipe_path %>
 

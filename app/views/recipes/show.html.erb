@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">s
+  <meta charset="UTF-8">
   <link rel="stylesheet" href="style.css">  <!-- ← ここがCSS読み込み -->
 </head>
 
-<h3>レシピ詳細</h3>
+<h2>レシピ詳細</h2>
+
+<%= link_to "レシピ一覧に戻る", recipes_path, class: "pop-button" %>
+<%= link_to "レシピ投稿ページへ", new_recipe_path, class: "pop-button" %>
 
 <div class="recipe">
 
@@ -33,44 +36,46 @@
      <p><%= @recipe.created_at %></p>
 
 
-          <% if user_signed_in? %>
-               <% if current_user.already_liked?(@recipe) %>
-                  <%= button_to recipe_like_path(id: @recipe.id, recipe_id: @recipe.id), data: { turbo_method: :delete } do %>
-                      <i class="fas fa-heart"></i><%= @recipe.likes.count %>
-                  <% end %>
-               <% else %>
-                  <%= button_to recipe_likes_path(id: @recipe.id, recipe_id: @recipe.id), data: { turbo_method: :post }  do %>
-                      <i class="far fa-heart"></i><%= @recipe.likes.count %>
-                  <% end %>
-               <% end %>
-          <% else %>
-              <i class="far fa-heart"></i><%= @recipe.likes.count %>
-          <% end %>
+  <% if user_signed_in? %>
+    <% if current_user.already_liked?(@recipe) %>
+      <%= button_to recipe_like_path(id: @recipe.id, recipe_id: @recipe.id), data: { turbo_method: :delete }, class: "like-button" do %>
+        <i class="fas fa-heart"></i> <%= @recipe.likes.count %>
+      <% end %>
+    <% else %>
+      <%= button_to recipe_likes_path(id: @recipe.id, recipe_id: @recipe.id), data: { turbo_method: :post }, class: "like-button" do %>
+        <i class="far fa-heart"></i> <%= @recipe.likes.count %>
+      <% end %>
+    <% end %>
+  <% else %>
+    <i class="far fa-heart"></i> <%= @recipe.likes.count %>
+  <% end %>
+
+<%= button_to url: recipe_path(@recipe.id),
+              method: :delete,
+              class: "delete-button",
+              data: { confirm: "本当に削除しますか？" } do %>
+  <i class="fas fa-trash-alt"></i> 削除
+<% end %>
+
+
 
 </div>
 
-<div class="comment-wrapper">
-  <p><strong>レビュー</strong></p>
-  <% @comments.each do |c| %>
-    <div>
-      <%= c.user.name unless c.user.blank? %>
-      <br>
-      <%= c.content %>
-    </div>
-      <br>
-  <% end %>
-
-  <% if user_signed_in? %>
+<h2>レビュー</h2>
+<% if user_signed_in? %>
+  <div class="comment-form">
     <%= form_with(model: [@recipe, @comment], local: true) do |f| %>
-      <%= f.text_area :content %>
-      <%= button_tag type: "submit" do %>
+      <%= f.text_area :content, placeholder: "感想を書いてね", class: "cute-textarea" %>
+      <%= button_tag type: "submit", class: "cute-button" do %>
         <i class="far fa-comments"></i> レビューを書き込む
       <% end %>
     <% end %>
-  <% end %>
-</div>
+  </div>
+<% end %>
 
- <p><strong>好評価したユーザー</strong></p>
+
+
+<h2>好評価したユーザー</strong></h2>
 <% @recipe.liked_users.each do |user| %>
 
   <li><%= user.name %></li>
@@ -81,14 +86,11 @@
 
 
 
-<%= link_to "レシピ一覧に戻る", recipes_path %>
 
+<% if user_signed_in? && current_user.id ==  @recipe.user_id%>
+  <%= link_to "レシピを編集する", edit_recipe_path(@recipe.id) , class: "pop-button"%>
 
-<%= link_to "レシピ投稿ページへ", new_recipe_path %>
-
-<% if user_signed_in? && current_user.id ==  @recipe.user_id %>
-  <%= link_to "レシピを編集する", edit_recipe_path(@recipe.id) %>
-  <%= button_to "削除する", recipe_path(@recipe.id), method: :delete %>
+  
 <% end %>
 
 

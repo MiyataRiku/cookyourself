@@ -1,62 +1,89 @@
 
 <h1>レシピ投稿ページ</h1>
-<%= form_with model: @recipe, local: true do |f| %>
+    <%= form_with(model: @recipe, local: true, html: { class: "form-card" }) do |f| %>
+        
+      <div class="field">
+        <%= f.label :name, "料理名" %>
+        <%= f.text_field :name %>
+      </div>
+      
+      <div class="field">
+        <%= f.label :image, "写真" %>
+        <%= f.file_field :image %>
+      </div>
 
-<div class="field">
-    <%= f.label :image,"写真" %>
-    <%= f.file_field :image %>
-</div>
+      <div class="field">
+        <%= f.label :price, "価格" %>
+        <div style="display: flex; align-items: center;">
+          <%= f.number_field :price %>
+          <span class="unit-label">円</span>
+        </div>
+      </div>
 
-<div class="field">
-    <%= f.label :name,"料理名" %>
-    <%= f.text_field :name, :size => 30 %>
-</div>
+      <div class="field">
+        <%= f.label :time, "調理時間" %>
+        <div style="display: flex; align-items: center;">
+          <%= f.number_field :time %>
+          <span class="unit-label">分</span>
+        </div>
+      </div>
 
-<div class="field">
-    <%= f.label :price,"価格"  %>
-    <%= f.number_field :price, :size => 10 %>
-    <%= f.label :price,"円"  %>
-</div>
+      <div class="field">
+        <%= f.label :kcal, "摂取カロリー" %>
+        <div style="display: flex; align-items: center;">
+          <%= f.number_field :kcal %>
+          <span class="unit-label">kcal</span>
+        </div>
+      </div>
 
-<div class="field">
-    <%= f.label :time,"調理時間"  %>
-    <%= f.number_field :time, :size => 10 %>
-    <%= f.label :time,"分"  %>
-</div>
+      <div class="field">
+        <%= f.label :material, "食材・調味料" %>
+        <%= f.text_area :material %>
+      </div>
 
-<div class="field">
-    <%= f.label :kcal,"摂取カロリー" %>
-    <%= f.number_field :kcal, :size => 10 %>
-    <%= f.label :kcal,"kcal" %>
-</div>
+      <div class="field">
+        <%= f.label :process, "調理工程" %>
+        <%= f.text_area :process %>
+      </div>
 
-<div class="field">
-    <%= f.label :material,"食材・調味料" %>
-    <%= f.text_area :material, :size => 30*10%>
-</div>
+      <div class="field">
+        <%= f.label :tips, "ワンポイントアドバイス・コツ" %>
+        <%= f.text_area :tips %>
+      </div>
 
-<div class="field">
-    <%= f.label :process,"調理工程" %>
-    <%= f.text_area :process, :size => 40*30%>
-</div>
 
-<div class="field">
-    <%= f.label :tips,"ワンポイントアドバイス・コツ" %>
-    <%= f.text_area :tips, :size => 40*30%>
-</div>
 
-<% unique_tags = @tags.uniq { |tag| tag.name } %>
+    <% tag_colors = {
+      'ごはんもの' => '#FF7043',
+      '肉料理' => '#E53935',
+      '魚料理' => '#039BE5',
+      'サラダ' => '#43A047',
+      'スープ' => '#8E24AA',
+      '麺' => '#FDD835',
+      'パン' => '#FFB74D',
+      'お菓子' => '#BA68C8',
+      'シーズン' => '#26A69A',
+      '一品料理' => '#5C6BC0'
+    } %>
 
-<% unique_tags.each do |tag| %>
-  <div>
-    <label>
-      <%= check_box_tag "recipe[tag_ids][]", tag.id, false %>
-      <%= tag.name %>
-    </label>
+    <div class="checkbox-grid">
+      <% @unique_tags.each do |tag| %>
+        <% color = tag_colors[tag.name] || '#ccc' %>
+        <div class="custom-checkbox" style="--tag-color: <%= color %>;">
+          <label>
+            <input type="checkbox" name="recipe[tag_ids][]" value="<%= tag.id %>" class="hidden-checkbox">
+            <span class="checkbox-icon"></span>
+            <%= tag.name %>
+          </label>
+        </div>
+      <% end %>
+    </div>
+
+
+
+  <div class="actions">
+    <%= f.submit "投稿する", class: "btn btn-primary" %>
   </div>
 <% end %>
 
-  <%= f.submit "投稿する" %>
-    <% end %>
-
-<%= link_to "レシピ一覧に戻る", recipes_path %>
+<%= link_to "レシピ一覧に戻る", recipes_path, class: "pop-button" %>

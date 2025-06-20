@@ -21,6 +21,20 @@ class RecipesController < ApplicationController
   def new
     @recipe = Recipe.new
     @tags = Tag.all
+    @unique_tags = Tag.distinct.pluck(:name).map { |name| Tag.find_by(name: name) }
+    @tag_colors = {
+  'ごはんもの' => '#FF7043',
+  '肉料理' => '#E53935',
+  '魚料理' => '#039BE5',
+  'サラダ' => '#43A047',
+  'スープ' => '#8E24AA',
+  '麺' => '#FDD835',
+  'パン' => '#FFB74D',
+  'お菓子' => '#BA68C8',
+  'シーズン' => '#26A69A',
+  '一品料理' => '#5C6BC0'
+  } 
+    
   end
 
   def create
